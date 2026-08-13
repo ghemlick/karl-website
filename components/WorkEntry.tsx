@@ -2,37 +2,50 @@ import Link from "next/link";
 import type { Work } from "@/content/works";
 import { MediaEmbed } from "./MediaEmbed";
 
-export function WorkEntry({ work }: { work: Work }) {
+export function WorkEntry({ work, compact = false }: { work: Work; compact?: boolean }) {
+  const allSpotify = work.media?.every((item) => item.type === "spotify");
+  const media = work.media?.length ? (
+    <div className={allSpotify ? "grid max-w-3xl gap-3 sm:grid-cols-2" : "space-y-5"}>
+      {work.media.map((item, index) => (
+        <MediaEmbed key={`${work.slug}-${index}`} media={item} />
+      ))}
+    </div>
+  ) : null;
+
+  const bodyClass = compact
+    ? "whitespace-pre-wrap text-[15px] leading-5 text-ink/90"
+    : "whitespace-pre-wrap text-[15px] leading-7 text-ink/90";
+
   return (
-    <article className="border-t border-line py-12 first:border-t-0 first:pt-0">
-      {work.media?.length ? (
-        <div className="mb-6 space-y-4">
-          {work.media.map((item, index) => (
-            <MediaEmbed key={`${work.slug}-${index}`} media={item} />
-          ))}
-        </div>
+    <article
+      className={
+        compact
+          ? "border-t border-line py-6 first:border-t-0 first:pt-0"
+          : "border-t border-line py-12 first:border-t-0 first:pt-0"
+      }
+    >
+      {!work.mediaAfter && media ? (
+        <div className={compact ? "mb-3" : "mb-6"}>{media}</div>
       ) : null}
 
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
-        <div className="space-y-4">
+      <div
+        className={
+          compact
+            ? "grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]"
+            : "grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]"
+        }
+      >
+        <div className={compact ? "space-y-2" : "space-y-4"}>
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">{work.title}</h2>
             {work.subtitle ? (
               <p className="mt-1 text-sm text-muted">{work.subtitle}</p>
             ) : null}
           </div>
-          {work.poem ? (
-            <p className="whitespace-pre-wrap text-[15px] leading-7 text-ink/90">
-              {work.poem}
-            </p>
-          ) : null}
-          {work.body ? (
-            <p className="whitespace-pre-wrap text-[15px] leading-7 text-ink/90">
-              {work.body}
-            </p>
-          ) : null}
+          {work.poem ? <p className={bodyClass}>{work.poem}</p> : null}
+          {work.body ? <p className={bodyClass}>{work.body}</p> : null}
           {work.notes?.length ? (
-            <ul className="space-y-1 text-sm text-muted">
+            <ul className={compact ? "space-y-0.5 text-sm leading-5 text-muted" : "space-y-1 text-sm text-muted"}>
               {work.notes.map((note) => (
                 <li key={note}>{note}</li>
               ))}
@@ -74,13 +87,23 @@ export function WorkEntry({ work }: { work: Work }) {
         </div>
 
         {work.credits?.length ? (
-          <aside className="text-sm leading-6 text-muted md:text-right">
+          <aside
+            className={
+              compact
+                ? "text-sm leading-5 text-muted md:text-right"
+                : "text-sm leading-6 text-muted md:text-right"
+            }
+          >
             {work.credits.map((line, index) => (
               <p key={`${work.slug}-credit-${index}`}>{line}</p>
             ))}
           </aside>
         ) : null}
       </div>
+
+      {work.mediaAfter && media ? (
+        <div className={compact ? "mt-3" : "mt-8"}>{media}</div>
+      ) : null}
     </article>
   );
 }

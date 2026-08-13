@@ -14,6 +14,48 @@ function YouTubeEmbed({ id }: { id: string }) {
   );
 }
 
+function soundcloudSrc(url: string, visual: boolean) {
+  const params = new URLSearchParams({
+    url,
+    color: "#2f9e96",
+    auto_play: "false",
+    hide_related: "true",
+    show_comments: "false",
+    show_user: "true",
+    show_reposts: "false",
+    show_teaser: "false",
+    visual: visual ? "true" : "false",
+  });
+  return `https://w.soundcloud.com/player/?${params.toString()}`;
+}
+
+function SoundCloudPlayer({
+  url,
+  title,
+  visual = true,
+}: {
+  url: string;
+  title?: string;
+  visual?: boolean;
+}) {
+  return (
+    <figure>
+      {title ? (
+        <figcaption className="mb-2 text-sm font-medium tracking-wide text-ink">
+          {title}
+        </figcaption>
+      ) : null}
+      <iframe
+        title={title ?? "SoundCloud player"}
+        src={soundcloudSrc(url, visual)}
+        allow="autoplay"
+        loading="lazy"
+        className={`w-full border-0 ${visual ? "h-[200px] sm:h-[240px]" : "h-[166px]"}`}
+      />
+    </figure>
+  );
+}
+
 export function MediaEmbed({ media }: { media: Media }) {
   if (media.type === "youtube") {
     return <YouTubeEmbed id={media.id} />;
@@ -30,16 +72,36 @@ export function MediaEmbed({ media }: { media: Media }) {
   }
 
   if (media.type === "spotify") {
-    const url = media.uri.startsWith("http")
+    const src = media.uri.startsWith("http")
       ? media.uri
-      : `https://open.spotify.com/embed?uri=${encodeURIComponent(media.uri)}`;
+      : `https://open.spotify.com/embed/track/${media.uri.replace("spotify:track:", "")}`;
     return (
       <iframe
-        src={url}
+        src={src}
         title="Spotify player"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        className="h-[152px] w-full"
+        loading="lazy"
+        className="h-20 max-w-xl w-full"
       />
+    );
+  }
+
+  if (media.type === "soundcloud") {
+    return <SoundCloudPlayer url={media.url} title={media.title} visual={media.visual} />;
+  }
+
+  if (media.type === "soundcloud-list") {
+    return (
+      <section>
+        {media.title ? (
+          <h3 className="mb-3 text-sm font-medium tracking-wide text-ink">{media.title}</h3>
+        ) : null}
+        <div className="space-y-3">
+          {media.tracks.map((track) => (
+            <SoundCloudPlayer key={track.url} url={track.url} visual={false} />
+          ))}
+        </div>
+      </section>
     );
   }
 

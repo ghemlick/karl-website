@@ -4,6 +4,12 @@ export type Media =
   | { type: "youtube"; id: string }
   | { type: "youtube-grid"; ids: string[] }
   | { type: "spotify"; uri: string }
+  | { type: "soundcloud"; url: string; title?: string; visual?: boolean }
+  | {
+      type: "soundcloud-list";
+      title?: string;
+      tracks: { url: string; title?: string }[];
+    }
   | { type: "image"; src: string; alt: string }
   | { type: "images"; items: { src: string; alt: string }[] };
 
@@ -22,6 +28,7 @@ export type Work = {
   links?: WorkLink[];
   scores?: WorkLink[];
   wantSheetMusic?: boolean;
+  mediaAfter?: boolean;
 };
 
 export const works: Work[] = [
@@ -112,6 +119,45 @@ this is our precipice:
     slug: "microrhythms",
     category: "composition",
     title: "Microrhythms",
+    mediaAfter: true,
+    media: [
+      {
+        type: "soundcloud",
+        url: "https://soundcloud.com/karl-allmusic/isomicro",
+        title: "iso+micro (with Elliot Cole)",
+      },
+      {
+        type: "soundcloud",
+        url: "https://soundcloud.com/karl-allmusic/sickmorleys",
+        title: "BDA-GOON-KA (with Sickmorley's)",
+      },
+      {
+        type: "soundcloud-list",
+        title: "Microgrooves",
+        tracks: [
+          {
+            url: "https://soundcloud.com/karl-allmusic/microgroove-1-ultra-laid-back",
+            title: "Microgroove 1: Ultra-Laid-Back",
+          },
+          {
+            url: "https://soundcloud.com/karl-allmusic/microgroove-3-warped-samba-groove",
+            title: "Microgroove 2: Warped Samba",
+          },
+          {
+            url: "https://soundcloud.com/karl-allmusic/microgroove-3-stretched-7",
+            title: "Microgroove 3: Stretched 7",
+          },
+          {
+            url: "https://soundcloud.com/karl-allmusic/micro-4-slow-64",
+            title: "Microgroove 4: Slow 6/4",
+          },
+          {
+            url: "https://soundcloud.com/karl-allmusic/microgroove-5-drunk-hiphop",
+            title: "Microgroove 5: Drunk Hip-Hop?",
+          },
+        ],
+      },
+    ],
     body: "I’m investigating the possibilities of composing with microrhythmic inflections, studying how subtle changes of tempo and note placement can open up new realms of rhythmic creation and perception. This can come in the form of rhythmic frameworks, like inventing a new kind of Viennese Waltz or a new system of swing, or can be used as a more flexible compositional tool, adding varying amounts of rhythmic warping and nuance throughout a particular piece.\n\nI built a sequencer interface in SuperCollider to help me design and explore these rhythmic ideas, which I then turned into MIDI, audio, and transcriptions to create the following tracks and short pieces. Included below is my electronic collaboration with Elliot Cole iso+micro, my open-instrumentation piece BDA-GOON-KA (performed here with the improv punk band Sickmorley's), and a collection of studio recordings I made of microrhythmic drum loops, called Microgrooves.",
     scores: [
       {
@@ -140,10 +186,10 @@ this is our precipice:
     slug: "talk-pop-song",
     category: "composition",
     title: "TALK / Pop Song",
+    mediaAfter: true,
     media: [
       { type: "spotify", uri: "spotify:track:3BRseAlAbdYy7gD2DAzC8P" },
       { type: "spotify", uri: "spotify:track:68XsF50k8zZyt5NG228Vyt" },
-      { type: "spotify", uri: "spotify:track:6HJJbLixs3yCP9HPszxxym" },
     ],
     credits: [
       "José María: Vocals",
@@ -165,6 +211,8 @@ this is our precipice:
     slug: "be-that-empty",
     category: "composition",
     title: "be that empty",
+    mediaAfter: true,
+    media: [{ type: "spotify", uri: "spotify:track:6HJJbLixs3yCP9HPszxxym" }],
     credits: ["Commissioned and Performed by the Vanguard Reed Quintet, 2020"],
     body: '"be that empty" is a musical rendering of Rumi\'s "The Song of the Reed", as translated by Coleman Barks.',
     poem: `Listen to the story told by the reed,
