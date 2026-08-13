@@ -50,7 +50,7 @@ function SoundCloudPlayer({
         src={soundcloudSrc(url, visual)}
         allow="autoplay"
         loading="lazy"
-        className={`w-full border-0 ${visual ? "h-[200px] sm:h-[240px]" : "h-[166px]"}`}
+        className={`w-full max-w-xl border-0 ${visual ? "h-[120px]" : "h-[88px]"}`}
       />
     </figure>
   );
@@ -96,7 +96,7 @@ export function MediaEmbed({ media }: { media: Media }) {
         {media.title ? (
           <h3 className="mb-3 text-sm font-medium tracking-wide text-ink">{media.title}</h3>
         ) : null}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {media.tracks.map((track) => (
             <SoundCloudPlayer key={track.url} url={track.url} visual={false} />
           ))}

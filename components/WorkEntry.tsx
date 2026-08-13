@@ -18,10 +18,11 @@ export function WorkEntry({ work, compact = false }: { work: Work; compact?: boo
 
   return (
     <article
+      id={work.slug}
       className={
         compact
-          ? "border-t border-line py-6 first:border-t-0 first:pt-0"
-          : "border-t border-line py-12 first:border-t-0 first:pt-0"
+          ? "scroll-mt-24 border-t border-line py-6 first:border-t-0 first:pt-0"
+          : "scroll-mt-24 border-t border-line py-12 first:border-t-0 first:pt-0"
       }
     >
       {!work.mediaAfter && media ? (

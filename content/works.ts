@@ -15,9 +15,20 @@ export type Media =
 
 export type WorkLink = { label: string; href: string };
 
+export const compositionGenres = [
+  { id: "opera-theater", label: "Opera & Theater" },
+  { id: "electronic-experimental", label: "Electronic & Experimental" },
+  { id: "chamber", label: "Chamber" },
+  { id: "large-ensemble", label: "Large Ensemble" },
+  { id: "songs-band", label: "Songs & Band" },
+] as const;
+
+export type CompositionGenre = (typeof compositionGenres)[number]["id"];
+
 export type Work = {
   slug: string;
   category: WorkCategory;
+  genre?: CompositionGenre;
   title: string;
   subtitle?: string;
   media?: Media[];
@@ -35,6 +46,7 @@ export const works: Work[] = [
   {
     slug: "the-precipice",
     category: "composition",
+    genre: "opera-theater",
     title: "THE PRECIPICE",
     media: [{ type: "youtube", id: "Nj1MURb-tSQ" }],
     credits: [
@@ -98,6 +110,7 @@ this is our precipice:
   {
     slug: "arrhythmia",
     category: "composition",
+    genre: "electronic-experimental",
     title: "ARRHYTHMIA",
     media: [{ type: "youtube", id: "SsjrkCX3q5g" }],
     credits: [
@@ -118,6 +131,7 @@ this is our precipice:
   {
     slug: "microrhythms",
     category: "composition",
+    genre: "electronic-experimental",
     title: "Microrhythms",
     mediaAfter: true,
     media: [
@@ -172,6 +186,7 @@ this is our precipice:
   {
     slug: "patience",
     category: "composition",
+    genre: "chamber",
     title: "Patience",
     media: [{ type: "youtube", id: "_hVrbXBRa6g" }],
     credits: [
@@ -185,6 +200,7 @@ this is our precipice:
   {
     slug: "talk-pop-song",
     category: "composition",
+    genre: "songs-band",
     title: "TALK / Pop Song",
     mediaAfter: true,
     media: [
@@ -210,6 +226,7 @@ this is our precipice:
   {
     slug: "be-that-empty",
     category: "composition",
+    genre: "chamber",
     title: "be that empty",
     mediaAfter: true,
     media: [{ type: "spotify", uri: "spotify:track:6HJJbLixs3yCP9HPszxxym" }],
@@ -250,6 +267,7 @@ and a fine love, together.`,
   {
     slug: "bahnhoffnung",
     category: "composition",
+    genre: "opera-theater",
     title: "Bahnhoffnung",
     media: [{ type: "youtube", id: "83FjKiEEhu8" }],
     credits: [
@@ -284,6 +302,7 @@ and let it drive away without me.`,
   {
     slug: "dreams-sleeping-in-the-forest",
     category: "composition",
+    genre: "songs-band",
     title: "Dreams / Sleeping in the Forest",
     media: [{ type: "youtube", id: "8Q-aSjrn5_E" }],
     body: "A lush, dark setting of two of my favorite Mary Oliver poems, created through my 2018 residency with the Red Shoe company.",
@@ -292,6 +311,7 @@ and let it drive away without me.`,
   {
     slug: "blue-green",
     category: "composition",
+    genre: "large-ensemble",
     title: "blue-green",
     media: [{ type: "youtube", id: "CYKA3obqPCA" }],
     credits: [
@@ -308,6 +328,7 @@ and let it drive away without me.`,
   {
     slug: "dance-and-meditation",
     category: "composition",
+    genre: "chamber",
     title: "dance and meditation and dance and",
     media: [{ type: "youtube", id: "Mizw-azf57Y" }],
     credits: [
@@ -322,6 +343,7 @@ and let it drive away without me.`,
   {
     slug: "hack-the-bells-reclaim",
     category: "composition",
+    genre: "electronic-experimental",
     title: 'Hack the Bells: "Reclaim"',
     media: [{ type: "youtube", id: "Xedxe6FhEwU" }],
     credits: [
@@ -341,6 +363,7 @@ and let it drive away without me.`,
   {
     slug: "three-scenes-from-sleeping-bear",
     category: "composition",
+    genre: "chamber",
     title: "Three Scenes from Sleeping Bear",
     media: [
       { type: "youtube", id: "kZsRUYn2udc" },
@@ -359,6 +382,7 @@ and let it drive away without me.`,
   {
     slug: "shapes-and-the-thought-that-made-them",
     category: "composition",
+    genre: "large-ensemble",
     title: "SHAPES and the thought that made them",
     media: [
       { type: "youtube", id: "dzQyK-jr9Do" },
@@ -398,6 +422,7 @@ Originally this description was an inspiration to me, as I attempted to make eac
   {
     slug: "trio-for-light-and-air",
     category: "composition",
+    genre: "chamber",
     title: "Trio for Light and Air",
     media: [{ type: "youtube", id: "B_SiGkBAtvg" }],
     credits: [
@@ -412,6 +437,7 @@ Originally this description was an inspiration to me, as I attempted to make eac
   {
     slug: "roboboros",
     category: "composition",
+    genre: "songs-band",
     title: "Roboboros",
     credits: [
       "Johnny Stevens, Guitar/Vox",
@@ -659,4 +685,65 @@ Originally this description was an inspiration to me, as I attempted to make eac
 
 export function worksByCategory(category: WorkCategory) {
   return works.filter((work) => work.category === category);
+}
+
+export function genreLabel(work: Work) {
+  return compositionGenres.find((genre) => genre.id === work.genre)?.label ?? "";
+}
+
+export function groupWorksByGenre(items: Work[]) {
+  const grouped: { id: string; label: string; works: Work[] }[] = compositionGenres
+    .map((genre) => ({
+      id: genre.id,
+      label: genre.label,
+      works: items.filter((work) => work.genre === genre.id),
+    }))
+    .filter((group) => group.works.length > 0);
+
+  const uncategorized = items.filter(
+    (work) => !work.genre || !compositionGenres.some((genre) => genre.id === work.genre),
+  );
+
+  if (uncategorized.length > 0) {
+    grouped.push({ id: "other", label: "Other", works: uncategorized });
+  }
+
+  return grouped;
+}
+
+function mediaSearchText(media: Media) {
+  switch (media.type) {
+    case "soundcloud":
+      return media.title ?? "";
+    case "soundcloud-list":
+      return [media.title, ...media.tracks.map((track) => track.title ?? "")].join(" ");
+    case "image":
+      return media.alt;
+    case "images":
+      return media.items.map((item) => item.alt).join(" ");
+    default:
+      return "";
+  }
+}
+
+export function workMatchesQuery(work: Work, query: string) {
+  const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return true;
+
+  const haystack = [
+    work.title,
+    work.subtitle,
+    work.body,
+    work.poem,
+    genreLabel(work),
+    ...(work.credits ?? []),
+    ...(work.notes ?? []),
+    ...(work.links ?? []).map((link) => link.label),
+    ...(work.scores ?? []).map((score) => score.label),
+    ...(work.media ?? []).map(mediaSearchText),
+  ]
+    .join("\n")
+    .toLowerCase();
+
+  return tokens.every((token) => haystack.includes(token));
 }
